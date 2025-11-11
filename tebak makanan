@@ -1,0 +1,42 @@
+import random
+
+def tebak_kata_makanan():
+    # Daftar makanan dan petunjuk (clue)
+    daftar_makanan = {
+        "nasi goreng": "Makanan dari nasi yang digoreng dengan bumbu dan kecap.",
+        "sate ayam": "Daging ayam yang ditusuk dan dibakar, disajikan dengan bumbu kacang.",
+        "bakso": "Makanan berbentuk bulat dari daging sapi, disajikan dengan kuah.",
+        "mie goreng": "Mie yang dimasak dengan cara digoreng bersama sayur dan bumbu.",
+        "rendang": "Masakan daging khas Padang, dimasak lama dengan santan dan rempah.",
+        "gudeg": "Makanan khas Yogyakarta dari nangka muda dimasak dengan santan.",
+        "soto": "Hidangan berkuah bening atau santan, biasanya dengan ayam atau sapi.",
+        "pempek": "Makanan khas Palembang dari ikan dan tepung, disajikan dengan cuka.",
+        "gado gado": "Salad khas Indonesia dengan bumbu kacang.",
+        "ketoprak": "Tahu, bihun, lontong, dan tauge disiram bumbu kacang.",
+        "nasi padang": "Hidangan nasi dengan berbagai lauk khas Sumatra Barat."
+    }
+
+    # Pilih acak makanan dan petunjuk
+    kata_asli, clue = random.choice(list(daftar_makanan.items()))
+
+    percobaan = 3  # jumlah kesempatan menebak
+    print("🎯 Selamat datang di permainan Tebak Kata Makanan!")
+    print("Kamu harus menebak nama makanan Indonesia berdasarkan petunjuk berikut:")
+    print(f"🧩 Clue: {clue}")
+    print(f"Kamu punya {percobaan} kesempatan.\n")
+
+    while percobaan > 0:
+        tebakan = input("Masukkan tebakanmu: ").lower().strip()
+
+        if tebakan == kata_asli:
+            print("🎉 Benar! Jawabannya adalah:", kata_asli.upper())
+            break
+        else:
+            percobaan -= 1
+            if percobaan > 0:
+                print(f"❌ Salah! Coba lagi. Sisa kesempatan: {percobaan}\n")
+            else:
+                print("😢 Kesempatan habis! Jawaban yang benar adalah:", kata_asli.upper())
+
+if __name__ == "__main__":
+    tebak_kata_makanan()
