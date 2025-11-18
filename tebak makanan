@@ -1,42 +1,221 @@
 import random
+import time
 
-def tebak_kata_makanan():
-    # Daftar makanan dan petunjuk (clue)
-    daftar_makanan = {
-        "nasi goreng": "Makanan dari nasi yang digoreng dengan bumbu dan kecap.",
-        "sate ayam": "Daging ayam yang ditusuk dan dibakar, disajikan dengan bumbu kacang.",
-        "bakso": "Makanan berbentuk bulat dari daging sapi, disajikan dengan kuah.",
-        "mie goreng": "Mie yang dimasak dengan cara digoreng bersama sayur dan bumbu.",
-        "rendang": "Masakan daging khas Padang, dimasak lama dengan santan dan rempah.",
-        "gudeg": "Makanan khas Yogyakarta dari nangka muda dimasak dengan santan.",
-        "soto": "Hidangan berkuah bening atau santan, biasanya dengan ayam atau sapi.",
-        "pempek": "Makanan khas Palembang dari ikan dan tepung, disajikan dengan cuka.",
-        "gado gado": "Salad khas Indonesia dengan bumbu kacang.",
-        "ketoprak": "Tahu, bihun, lontong, dan tauge disiram bumbu kacang.",
-        "nasi padang": "Hidangan nasi dengan berbagai lauk khas Sumatra Barat."
-    }
+# ===========================
+#   WARNA ANSI (biar keren)
+# ===========================
+R = "\033[31m"
+G = "\033[32m"
+Y = "\033[33m"
+B = "\033[34m"
+P = "\033[35m"
+C = "\033[36m"
+W = "\033[0m"
 
-    # Pilih acak makanan dan petunjuk
-    kata_asli, clue = random.choice(list(daftar_makanan.items()))
+leaderboard = []
 
-    percobaan = 3  # jumlah kesempatan menebak
-    print("🎯 Selamat datang di permainan Tebak Kata Makanan!")
-    print("Kamu harus menebak nama makanan Indonesia berdasarkan petunjuk berikut:")
-    print(f"🧩 Clue: {clue}")
-    print(f"Kamu punya {percobaan} kesempatan.\n")
 
-    while percobaan > 0:
-        tebakan = input("Masukkan tebakanmu: ").lower().strip()
+# ===========================
+#   ANIMASI LOADING
+# ===========================
+def loading(text="Memulai", delay=0.3, dots=3):
+    for i in range(dots):
+        print(text + "." * (i+1))
+        time.sleep(delay)
+    print()
 
-        if tebakan == kata_asli:
-            print("🎉 Benar! Jawabannya adalah:", kata_asli.upper())
+
+# ===========================
+#        OPENING GAME
+# ===========================
+def opening_game():
+    print(f"""{C}
+===========================================
+          ⚡ SELAMAT DATANG ⚡
+               di dunia
+        ██████  ██████  ████
+         GAME TEBAK ANGKA LEGENDARIS
+===========================================
+
+Di tempat ini, ketepatan adalah senjata.
+Keberanian adalah nyawa.
+Dan keberuntungan… hanyalah bonus.
+
+Komputer telah menantangmu.
+Bisakah kamu menebak angka rahasia
+sebelum waktumu habis?
+
+Buktikan bahwa kamu layak menjadi legenda.
+{W}""")
+    time.sleep(2)
+
+
+# ===========================
+#       LEADERBOARD
+# ===========================
+def tampilkan_leaderboard():
+    print(f"""{Y}
+===========================================
+              🏆 LEADERBOARD 🏆
+          Papan Kejayaan Pemain
+===========================================""")
+    
+    if not leaderboard:
+        print("Belum ada pemenang yang tercatat!\n")
+        return
+    
+    rank = 1
+    for nama, skor in sorted(leaderboard, key=lambda x: x[1], reverse=True):
+        print(f" {rank}. {nama:<20} — {skor} Poin")
+        rank += 1
+
+    print("\nHanya yang tercepat & paling akurat yang dapat masuk daftar ini.\n")
+
+
+# ===========================
+#         MENU UTAMA
+# ===========================
+def menu():
+    print(f"""{G}
+===========================================
+           🎮 GAME TEBAK ANGKA 🎮
+===========================================
+1. Mulai Game
+2. Cara Bermain
+3. Leaderboard
+4. Keluar
+===========================================
+{W}""")
+    return input("Pilih menu: ")
+
+
+# ===========================
+#        CARA BERMAIN
+# ===========================
+def cara_bermain():
+    print(f"""{C}
+=== CARA BERMAIN ===
+• Pilih level kesulitan.
+• Kamu punya batas kesempatan (nyawa).
+• Tebak angka yang dipilih komputer.
+• Gunakan hint jika bingung.
+• Menang jika berhasil menebak sebelum nyawa habis.
+
+Semoga beruntung, penantang.
+{W}""")
+
+
+# ===========================
+#        PILIH LEVEL
+# ===========================
+def pilih_level():
+    print(f"""{P}
+=== PILIH LEVEL ===
+1. Mudah (1–50) | Nyawa: 10
+2. Normal (1–100) | Nyawa: 7
+3. Sulit (1–500) | Nyawa: 10
+4. Mustahil (1–1000) | Nyawa: 5
+{W}""")
+
+    level = input("Pilih level: ")
+
+    if level == "1":
+        return 50, 10
+    elif level == "2":
+        return 100, 7
+    elif level == "3":
+        return 500, 10
+    elif level == "4":
+        return 1000, 5
+    else:
+        print("Level tidak valid, dipilih Normal.\n")
+        return 100, 7
+
+
+# ===========================
+#            HINT
+# ===========================
+def hint(secret, guess):
+    selisih = abs(secret - guess)
+    
+    if selisih <= 5:
+        return "🔥 Sangat dekat!"
+    elif selisih <= 15:
+        return "✨ Cukup dekat."
+    elif secret % 2 == 0:
+        return "🔍 Angkanya genap."
+    else:
+        return "🔍 Angkanya ganjil."
+
+
+# ===========================
+#         MAIN GAME
+# ===========================
+def main_game():
+    max_num, lives = pilih_level()
+    secret = random.randint(1, max_num)
+    attempts = 0
+
+    loading("Mengacak angka", 0.2)
+
+    print(f"{B}\nSaya sudah memilih angka antara 1 dan {max_num}.")
+    print(f"Kamu punya {lives} nyawa. Tebak dengan bijak!{W}\n")
+
+    while lives > 0:
+        try:
+            guess = int(input("Tebakanmu: "))
+            attempts += 1
+
+            if guess == secret:
+                print(f"\n🎉 BENAR! Angkanya adalah {secret}.")
+                score = (max_num // attempts) + (lives * 10)
+                print(f"🏆 Skor kamu: {score}")
+
+                # Simpan ke leaderboard
+                nama = input("Masukkan namamu untuk leaderboard: ")
+                leaderboard.append((nama, score))
+
+                break
+
+            lives -= 1
+
+            if guess < secret:
+                print("📉 Terlalu rendah.")
+            else:
+                print("📈 Terlalu tinggi.")
+
+            print("💡 Hint:", hint(secret, guess))
+            print(f"❤ Sisa nyawa: {lives}\n")
+
+        except ValueError:
+            print("Masukkan angka yang valid!\n")
+
+    if lives == 0:
+        print(f"{R}❌ Nyawa habis! Angka yang benar adalah {secret}.{W}")
+        print("Coba lagi ya!")
+
+
+# ===========================
+#           GAME LOOP
+# ===========================
+def game():
+    opening_game()
+    
+    while True:
+        pilihan = menu()
+
+        if pilihan == "1":
+            main_game()
+        elif pilihan == "2":
+            cara_bermain()
+        elif pilihan == "3":
+            tampilkan_leaderboard()
+        elif pilihan == "4":
+            print("Terima kasih sudah bermain! Sampai jumpa!")
             break
         else:
-            percobaan -= 1
-            if percobaan > 0:
-                print(f"❌ Salah! Coba lagi. Sisa kesempatan: {percobaan}\n")
-            else:
-                print("😢 Kesempatan habis! Jawaban yang benar adalah:", kata_asli.upper())
+            print("Menu tidak dikenal.\n")
 
-if __name__ == "__main__":
-    tebak_kata_makanan()
+
+# Jalankan game
+game()
