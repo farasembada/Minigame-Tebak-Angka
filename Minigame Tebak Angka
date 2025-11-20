@@ -2,7 +2,7 @@ import random
 import time
 
 # ===========================
-#   WARNA ANSI (biar keren)
+#   WARNA ANSI
 # ===========================
 R = "\033[31m"
 G = "\033[32m"
@@ -26,15 +26,14 @@ def loading(text="Memulai", delay=0.3, dots=3):
 
 
 # ===========================
-#        OPENING GAME
+#   OPENING GAME
 # ===========================
 def opening_game():
     print(f"""{C}
 ===========================================
           ⚡ SELAMAT DATANG ⚡
                di dunia
-        ██████  ██████  ████
-         GAME TEBAK ANGKA LEGENDARIS
+           GAME TEBAK ANGKA 
 ===========================================
 
 Di tempat ini, ketepatan adalah senjata.
@@ -51,7 +50,7 @@ Buktikan bahwa kamu layak menjadi legenda.
 
 
 # ===========================
-#       LEADERBOARD
+#   LEADERBOARD
 # ===========================
 def tampilkan_leaderboard():
     print(f"""{Y}
@@ -73,7 +72,7 @@ def tampilkan_leaderboard():
 
 
 # ===========================
-#         MENU UTAMA
+#   MENU UTAMA
 # ===========================
 def menu():
     print(f"""{G}
@@ -90,7 +89,7 @@ def menu():
 
 
 # ===========================
-#        CARA BERMAIN
+#   CARA BERMAIN
 # ===========================
 def cara_bermain():
     print(f"""{C}
@@ -106,14 +105,14 @@ Semoga beruntung, penantang.
 
 
 # ===========================
-#        PILIH LEVEL
+#   PILIH LEVEL
 # ===========================
 def pilih_level():
     print(f"""{P}
 === PILIH LEVEL ===
 1. Mudah (1–50) | Nyawa: 10
 2. Normal (1–100) | Nyawa: 7
-3. Sulit (1–500) | Nyawa: 10
+3. Sulit (1–500) | Nyawa: 5
 4. Mustahil (1–1000) | Nyawa: 5
 {W}""")
 
@@ -124,7 +123,7 @@ def pilih_level():
     elif level == "2":
         return 100, 7
     elif level == "3":
-        return 500, 10
+        return 500, 5
     elif level == "4":
         return 1000, 5
     else:
@@ -133,7 +132,7 @@ def pilih_level():
 
 
 # ===========================
-#            HINT
+#   HINT
 # ===========================
 def hint(secret, guess):
     selisih = abs(secret - guess)
@@ -149,7 +148,7 @@ def hint(secret, guess):
 
 
 # ===========================
-#         MAIN GAME
+#   MAIN GAME
 # ===========================
 def main_game():
     max_num, lives = pilih_level()
@@ -171,7 +170,6 @@ def main_game():
                 score = (max_num // attempts) + (lives * 10)
                 print(f"🏆 Skor kamu: {score}")
 
-                # Simpan ke leaderboard
                 nama = input("Masukkan namamu untuk leaderboard: ")
                 leaderboard.append((nama, score))
 
@@ -190,13 +188,42 @@ def main_game():
         except ValueError:
             print("Masukkan angka yang valid!\n")
 
-    if lives == 0:
-        print(f"{R}❌ Nyawa habis! Angka yang benar adalah {secret}.{W}")
-        print("Coba lagi ya!")
+    # ===========================
+    #        BAGIAN TAMAT
+    # ===========================
+    if lives > 0:
+        print(f"""{G}
+=====================================
+          🎉 KAMU MENANG! 🎉
+=====================================
+Dengan ketepatan dan keberanianmu,
+kamu berhasil menaklukkan angka rahasia.
+
+Legenda baru telah lahir.
+=====================================
+{W}""")
+    else:
+        print(f"""{R}
+=====================================
+             ☠ GAME OVER ☠
+=====================================
+Kamu telah berjuang, namun angka rahasia
+tak berhasil kamu taklukkan.
+
+Jangan menyerah. Legenda tidak lahir
+dalam satu percobaan.
+=====================================
+{W}""")
+
+    # Tanya mau main lagi atau tamat
+    ulang = input("Main lagi? (y/n): ").lower()
+    if ulang != "y":
+        print("Game berakhir. Terima kasih telah bermain!")
+        exit()
 
 
 # ===========================
-#           GAME LOOP
+#   GAME LOOP
 # ===========================
 def game():
     opening_game()
